@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-    "id": "eaec0014-d6a6-42af-aa1b-35549a9cdca0",
+    "id": "cc27ba95-95d9-4479-9b6c-2c69881598fa",
     "name": "InfisicalSecrets",
     "friendlyName": "Get Infisical Secrets",
     "description": "Fetch secrets from Infisical and expose them as pipeline variables.",
