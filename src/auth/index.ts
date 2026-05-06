@@ -25,9 +25,5 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
     }
 }
 
-export { loginWithUniversalAuth } from "./universalAuth";
-export { loginWithOidc } from "./oidc";
-export type { UniversalAuthInput } from "./universalAuth";
-export type { OidcAuthInput } from "./oidc";
 export type { LoginRequest, LoginResponse } from "./types";
 export { InfisicalAuthError } from "./types";

@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "infisical-secrets-action-azure-validation",
-    "publisher": "adilsitos-validation", 
+    "publisher": "infisical", 
     "version": "1.0.0",
     "name": "Infisical Secrets validation",
     "description": "Fetch secrets from Infisical and expose them as masked pipeline variables. Supports Infisical Cloud and self-hosted instances.",

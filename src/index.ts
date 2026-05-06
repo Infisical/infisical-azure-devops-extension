@@ -79,11 +79,8 @@ async function run(): Promise<void> {
             secretPath,
         });
 
-        console.log(`Result: ${JSON.stringify(result)}`);
-
         for (const secret of result.secrets) {
-            console.log(`Setting variable: ${secret.secretKey}`); // log the KEY only, not the value
-            tl.setVariable(`${secret.secretKey}`, secret.secretValue, false); // change to true later 
+            tl.setVariable(secret.secretKey, secret.secretValue, true);
         }
 
         tl.setResult(

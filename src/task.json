@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "eaec0014-d6a6-42af-aa1b-35549a9cdca0",
-    "name": "InfisicalSecretsValidation",
+    "name": "InfisicalSecrets",
     "friendlyName": "Get Infisical Secrets",
     "description": "Fetch secrets from Infisical and expose them as pipeline variables.",
     "helpMarkDown": "Fetches secrets from an Infisical project using the configured Infisical service connection. Each secret is exposed as a secret pipeline variable for subsequent steps.",
@@ -10,10 +10,10 @@
         "Build",
         "Release"
     ],
-    "author": "adilsitos-validation",
+    "author": "infisical",
     "version": {
         "Major": 1,
-        "Minor": 1,
+        "Minor": 0,
         "Patch": 0
     },
     "instanceNameFormat": "Get Infisical secrets ($(environment))",

@@ -5,7 +5,7 @@ Azure DevOps extension that fetches secrets from [Infisical](https://infisical.c
 The extension contributes:
 
 - A **service connection** type (`Infisical`) that holds the URL of your Infisical instance and machine-identity credentials.
-- A pipeline **task** (`InfisicalSecrets@0`) that consumes the connection, fetches secrets, and exposes each one as a secret pipeline variable for subsequent steps.
+- A pipeline **task** (`InfisicalSecrets`) that consumes the connection, fetches secrets, and exposes each one as a secret pipeline variable for subsequent steps.
 
 ## Authentication
 
@@ -15,28 +15,18 @@ Authentication is performed against Infisical [Machine Identities](https://infis
 
 [Universal Auth](https://infisical.com/docs/documentation/platform/identities/universal-auth) — Client ID + Client Secret.
 
-When you create the service connection, pick **Universal Auth** as the authentication method and paste the machine identity's Client ID and Client Secret. The Client Secret is stored confidentially.
+When you create the service connection, pick **Universal Auth** as the authentication method and paste the machine identity's Client ID and Client Secret. The Client Secret is stored encrypted and cannot be retrieved.
 
 ### OIDC
 
 [OIDC Auth](https://infisical.com/docs/documentation/platform/identities/oidc-auth) — no credentials at connection-creation time.
 
-When you create the Infisical service connection, pick **OIDC** and leave the form blank. At pipeline run-time the task mints a federated OIDC JWT from an Azure Resource Manager service connection (Workload Identity Federation) and exchanges it for an Infisical access token.
+When you create the Infisical service connection, pick **OIDC** and use the [Azure credentials](https://infisical.com/docs/documentation/platform/identities/oidc-auth/azure). At pipeline run-time the task mints a federated OIDC JWT from an Azure Resource Manager service connection (Workload Identity Federation) and exchanges it for an Infisical access token.
 
 To use OIDC you must also provide two task inputs:
 
 - `azureSubscription` — an Azure RM service connection configured with Workload Identity Federation.
 - `identityId` — the ID of the Infisical machine identity that accepts your Azure DevOps issuer.
-
-#### OIDC setup
-
-1. **Create an Azure RM service connection with Workload Identity Federation** in Azure DevOps (**Project settings → Service connections → New → Azure Resource Manager → Workload Identity Federation**).
-2. **Create the Infisical machine identity** with an OIDC auth method:
-   - **Issuer**: `https://vstoken.dev.azure.com/<your-azure-devops-org-guid>`
-   - **Audience**: `api://AzureADTokenExchange` (this is the default audience Azure DevOps uses for federated tokens; an audience mismatch is the most common misconfiguration)
-   - Configure the subject and other allowed claims to match the Azure RM service connection's federated subject.
-3. **Create the Infisical service connection** in Azure DevOps with the **OIDC** authentication scheme.
-4. **Wire both connections into the task** — see the OIDC sample in [`samples/azure-pipelines.yml`](samples/azure-pipelines.yml).
 
 ## Setup
 
@@ -47,7 +37,6 @@ For private testing, build the `.vsix` and upload it to the [Visual Studio Marke
 ```sh
 npm install
 npm run package-extension
-# adilsitos-validation.test-secrets-action-azure-1.0.0.vsix
 ```
 
 ### 2. Create the service connection
@@ -78,8 +67,7 @@ steps:
       infisicalConnection: infisical
       projectId: $(INFISICAL_PROJECT_ID)
       environment: dev
-      secretPath: /
-      recursive: false
+      secretPath: path
 
   - script: |
       echo "DATABASE_URL is set: ${DATABASE_URL:+yes}"
@@ -100,21 +88,10 @@ Each fetched secret becomes a masked pipeline variable named after its Infisical
 | `projectId`           | Yes             | —       | The Infisical project (workspace) ID. Find it under **Project settings → General** in the Infisical UI.                                                           |
 | `environment`         | Yes             | `dev`   | The environment slug (e.g. `dev`, `staging`, `prod`).                                                                                                             |
 | `secretPath`          | No              | `/`     | Folder path within the environment.                                                                                                                               |
-| `recursive`           | No              | `false` | If `true`, fetches secrets from sub-folders recursively.                                                                                                          |
-| `variablePrefix`      | No              | (empty) | Prefix prepended to each pipeline variable name. Useful for namespacing or to avoid collisions between secrets and other pipeline variables.                      |
-
 ## Self-hosted Infisical
 
 Set the **Infisical URL** field on the service connection to your self-hosted base URL (e.g. `https://infisical.mycorp.example`). The task uses this URL for both the auth login call and the secrets fetch.
 
-## Development
-
-```sh
-npm install
-npm run compile             # tsc --noEmit + jest
-npm run build               # compile + bundle the task with ncc
-npm run package-extension   # build + tfx extension create -> .vsix
-```
 
 Layout:
 
