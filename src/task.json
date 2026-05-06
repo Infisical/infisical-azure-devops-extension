@@ -1,0 +1,77 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "eaec0014-d6a6-42af-aa1b-35549a9cdca0",
+    "name": "InfisicalSecretsValidation",
+    "friendlyName": "Get Infisical Secrets",
+    "description": "Fetch secrets from Infisical and expose them as pipeline variables.",
+    "helpMarkDown": "Fetches secrets from an Infisical project using the configured Infisical service connection. Each secret is exposed as a secret pipeline variable for subsequent steps.",
+    "category": "Build",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "adilsitos-validation",
+    "version": {
+        "Major": 1,
+        "Minor": 1,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Get Infisical secrets ($(environment))",
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        },
+        "Node16": {
+            "target": "index.js"
+        },
+        "Node20_1": {
+            "target": "index.js"
+        }
+    },
+    "inputs": [
+        {
+            "name": "infisicalConnection",
+            "type": "connectedService:Infisical",
+            "label": "Infisical service connection",
+            "required": true,
+            "helpMarkDown": "Service connection that points at your Infisical instance."
+        },
+        {
+            "name": "azureSubscription",
+            "type": "connectedService:AzureRM",
+            "label": "Azure subscription (OIDC only)",
+            "required": false,
+            "helpMarkDown": "Azure Resource Manager service connection used to mint a federated OIDC token. Required only when the selected Infisical service connection uses the OIDC authentication scheme. The Azure service connection must be configured with Workload Identity Federation."
+        },
+        {
+            "name": "identityId",
+            "type": "string",
+            "label": "Infisical identity ID (OIDC only)",
+            "required": false,
+            "helpMarkDown": "Infisical machine identity ID to authenticate as. Required only when the Infisical service connection uses the OIDC scheme."
+        },
+        {
+            "name": "projectId",
+            "type": "string",
+            "label": "Project ID",
+            "required": true,
+            "helpMarkDown": "Infisical project (workspace) ID. Found in Project Settings → General."
+        },
+        {
+            "name": "environment",
+            "type": "string",
+            "label": "Environment",
+            "defaultValue": "dev",
+            "required": true,
+            "helpMarkDown": "Environment slug (e.g. dev, staging, prod)."
+        },
+        {
+            "name": "secretPath",
+            "type": "string",
+            "label": "Secret path",
+            "defaultValue": "/",
+            "required": false,
+            "helpMarkDown": "Folder path within the environment. Defaults to /."
+        }
+    ]
+}
