@@ -4,12 +4,12 @@ import { fetchAzureOidcToken } from "./auth/azureOidcToken";
 import { listSecrets } from "./secrets";
 
 const SCHEME_BASIC = "UsernamePassword";
-const SCHEME_OIDC = "None";
+const SCHEME_NONE = "None"; // assume that if nothing was sent, it's OIDC
 
 async function getAccessToken(connectionId: string, baseUrl: string): Promise<string> {
     const scheme = tl.getEndpointAuthorizationSchemeRequired(connectionId);
     if (scheme === SCHEME_BASIC) return getAccessTokenUniversal(connectionId, baseUrl);
-    if (scheme === SCHEME_OIDC) return getAccessTokenOidc(baseUrl);
+    if (scheme === SCHEME_NONE) return getAccessTokenOidc(baseUrl);
     throw new Error(
         `Unsupported authentication scheme on Infisical service connection: ${scheme}`,
     );
