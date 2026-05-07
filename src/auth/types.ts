@@ -1,6 +1,11 @@
+export enum AuthMethod {
+    UniversalAuth = "universal-auth",
+    Oidc = "oidc",
+}
+
 export type LoginRequest =
-    | { method: "universal-auth"; baseUrl: string; clientId: string; clientSecret: string }
-    | { method: "oidc"; baseUrl: string; identityId: string; jwt: string };
+    | { method: AuthMethod.UniversalAuth; baseUrl: string; clientId: string; clientSecret: string }
+    | { method: AuthMethod.Oidc; baseUrl: string; identityId: string; jwt: string };
 
 export interface LoginResponse {
     accessToken: string;

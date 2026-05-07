@@ -1,8 +1,8 @@
 import { InfisicalSecretsError, ListSecretsInput, ListSecretsResponse } from "./types";
 
 export async function listSecrets(input: ListSecretsInput): Promise<ListSecretsResponse> {
-    const url = new URL("/api/v3/secrets/raw", input.baseUrl);
-    url.searchParams.set("workspaceId", input.workspaceId);
+    const url = new URL("/api/v4/secrets", input.baseUrl);
+    url.searchParams.set("projectId", input.projectId);
     url.searchParams.set("environment", input.environment);
     if (input.secretPath) url.searchParams.set("secretPath", input.secretPath);
 

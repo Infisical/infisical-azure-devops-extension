@@ -6,6 +6,7 @@ import {
     setEndpoint,
     setInput,
 } from "./helpers";
+import { AuthMethod } from "../auth/types";
 
 const CONNECTION_ID = "infisicalConnection";
 const BASE_URL = "https://app.infisical.com";
@@ -15,6 +16,7 @@ const fetchAzureOidcTokenMock = jest.fn();
 const listSecretsMock = jest.fn();
 
 jest.mock("../auth", () => ({
+    ...jest.requireActual("../auth"),
     login: (...args: unknown[]) => loginMock(...args),
 }));
 
@@ -84,7 +86,7 @@ describe("InfisicalSecrets task input wiring", () => {
         expect(completion.result).toBe("Succeeded");
         expect(loginMock).toHaveBeenCalledTimes(1);
         expect(loginMock).toHaveBeenCalledWith({
-            method: "universal-auth",
+            method: AuthMethod.UniversalAuth,
             baseUrl: BASE_URL,
             clientId: "client-id-1",
             clientSecret: "client-secret-1",
@@ -94,7 +96,7 @@ describe("InfisicalSecrets task input wiring", () => {
         expect(listSecretsMock).toHaveBeenCalledWith({
             baseUrl: BASE_URL,
             accessToken: "tok",
-            workspaceId: "ws-1",
+            projectId: "ws-1",
             environment: "dev",
             secretPath: "/app",
         });
@@ -155,7 +157,7 @@ describe("InfisicalSecrets task input wiring", () => {
         });
         expect(loginMock).toHaveBeenCalledTimes(1);
         expect(loginMock).toHaveBeenCalledWith({
-            method: "oidc",
+            method: AuthMethod.Oidc,
             baseUrl: BASE_URL,
             identityId: "machine-id-1",
             jwt: "federated-jwt",
@@ -164,7 +166,7 @@ describe("InfisicalSecrets task input wiring", () => {
         expect(listSecretsMock).toHaveBeenCalledWith({
             baseUrl: BASE_URL,
             accessToken: "tok-oidc",
-            workspaceId: "ws-1",
+            projectId: "ws-1",
             environment: "dev",
             secretPath: "/app",
         });
@@ -172,6 +174,80 @@ describe("InfisicalSecrets task input wiring", () => {
         const setVars = parseSetVariables(stdout);
         expect(setVars).toEqual([
             { name: "OIDC_SECRET", value: "val", isSecret: true, isOutput: false },
+        ]);
+    });
+
+    it("exposes imported secrets and lets direct secrets override imports with the same key", async () => {
+        setEndpoint(CONNECTION_ID, {
+            url: BASE_URL,
+            scheme: "UsernamePassword",
+            parameters: { username: "client-id-1", password: "client-secret-1" },
+        });
+        setInput("infisicalConnection", CONNECTION_ID);
+        setInput("projectId", "ws-1");
+        setInput("environment", "dev");
+        setInput("secretPath", "/app");
+
+        loginMock.mockResolvedValue({
+            accessToken: "tok",
+            expiresIn: 3600,
+            accessTokenMaxTTL: 7200,
+            tokenType: "Bearer",
+        });
+        listSecretsMock.mockResolvedValue({
+            secrets: [
+                {
+                    id: "s1",
+                    secretKey: "DIRECT_KEY",
+                    secretValue: "direct-value",
+                    environment: "dev",
+                    secretPath: "/app",
+                },
+                {
+                    id: "s2",
+                    secretKey: "SHARED_KEY",
+                    secretValue: "direct-wins",
+                    environment: "dev",
+                    secretPath: "/app",
+                },
+            ],
+            imports: [
+                {
+                    secretPath: "/shared",
+                    environment: "dev",
+                    folderId: "folder-1",
+                    secrets: [
+                        {
+                            id: "i1",
+                            secretKey: "IMPORTED_KEY",
+                            secretValue: "imported-value",
+                            environment: "dev",
+                        },
+                        {
+                            id: "i2",
+                            secretKey: "SHARED_KEY",
+                            secretValue: "imported-loses",
+                            environment: "dev",
+                        },
+                    ],
+                },
+            ],
+        });
+
+        const capture = captureStdout();
+        require("../index");
+        const completion = await capture.complete;
+        const stdout = capture.stop();
+
+        expect(completion.result).toBe("Succeeded");
+        expect(completion.message).toBe("Loaded 3 secret(s) from Infisical.");
+
+        const setVars = parseSetVariables(stdout);
+        expect(setVars).toEqual([
+            { name: "IMPORTED_KEY", value: "imported-value", isSecret: true, isOutput: false },
+            { name: "SHARED_KEY", value: "imported-loses", isSecret: true, isOutput: false },
+            { name: "DIRECT_KEY", value: "direct-value", isSecret: true, isOutput: false },
+            { name: "SHARED_KEY", value: "direct-wins", isSecret: true, isOutput: false },
         ]);
     });
 });

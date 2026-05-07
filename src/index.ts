@@ -1,5 +1,5 @@
 import * as tl from "azure-pipelines-task-lib/task";
-import { login } from "./auth";
+import { AuthMethod, login } from "./auth";
 import { fetchAzureOidcToken } from "./auth/azureOidcToken";
 import { listSecrets } from "./secrets";
 
@@ -19,7 +19,7 @@ async function getAccessTokenUniversal(connectionId: string, baseUrl: string): P
     const clientId = tl.getEndpointAuthorizationParameterRequired(connectionId, "username");
     const clientSecret = tl.getEndpointAuthorizationParameterRequired(connectionId, "password");
     const result = await login({
-        method: "universal-auth",
+        method: AuthMethod.UniversalAuth,
         baseUrl,
         clientId,
         clientSecret,
@@ -53,7 +53,7 @@ async function getAccessTokenOidc(baseUrl: string): Promise<string> {
     });
 
     const result = await login({
-        method: "oidc",
+        method: AuthMethod.Oidc,
         baseUrl,
         identityId,
         jwt,
@@ -74,18 +74,25 @@ async function run(): Promise<void> {
         const result = await listSecrets({
             baseUrl,
             accessToken,
-            workspaceId: projectId,
+            projectId,
             environment,
             secretPath,
         });
 
-        for (const secret of result.secrets) {
+        const allSecrets = [
+            ...(result.imports ?? []).flatMap((i) => i.secrets),
+            ...result.secrets,
+        ];
+
+        for (const secret of allSecrets) {
             tl.setVariable(secret.secretKey, secret.secretValue, true);
         }
 
+        const uniqueCount = new Set(allSecrets.map((s) => s.secretKey)).size;
+
         tl.setResult(
             tl.TaskResult.Succeeded,
-            `Loaded ${result.secrets.length} secret(s) from Infisical.`,
+            `Loaded ${uniqueCount} secret(s) from Infisical.`,
         );
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

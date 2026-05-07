@@ -1,4 +1,4 @@
-import { InfisicalAuthError, LoginResponse } from "./types";
+import { AuthMethod, InfisicalAuthError, LoginResponse } from "./types";
 
 export interface UniversalAuthInput {
     baseUrl: string;
@@ -16,7 +16,7 @@ export async function loginWithUniversalAuth(input: UniversalAuthInput): Promise
         signal: AbortSignal.timeout(input.timeoutMs ?? 15000),
     });
     if (!response.ok) {
-        throw new InfisicalAuthError(response.status, await response.text(), "universal-auth");
+        throw new InfisicalAuthError(response.status, await response.text(), AuthMethod.UniversalAuth);
     }
     return (await response.json()) as LoginResponse;
 }

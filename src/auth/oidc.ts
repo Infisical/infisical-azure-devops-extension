@@ -1,4 +1,4 @@
-import { InfisicalAuthError, LoginResponse } from "./types";
+import { AuthMethod, InfisicalAuthError, LoginResponse } from "./types";
 
 export interface OidcAuthInput {
     baseUrl: string;
@@ -16,7 +16,7 @@ export async function loginWithOidc(input: OidcAuthInput): Promise<LoginResponse
         signal: AbortSignal.timeout(input.timeoutMs ?? 15000),
     });
     if (!response.ok) {
-        throw new InfisicalAuthError(response.status, await response.text(), "oidc");
+        throw new InfisicalAuthError(response.status, await response.text(), AuthMethod.Oidc);
     }
     return (await response.json()) as LoginResponse;
 }

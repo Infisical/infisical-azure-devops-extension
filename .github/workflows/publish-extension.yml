@@ -27,13 +27,11 @@ jobs:
 
       - name: Extract version from tag
         id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: npm version ${GITHUB_REF_NAME#v} --no-git-tag-version
 
       - name: Publish to Marketplace
-        env:
-          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
         run: |
           tfx extension publish \
             --manifest-globs vss-extension.json \
-            --token "$AZURE_DEVOPS_PAT" \
+            --token ${{ secrets.AZURE_DEVOPS_PAT }} \
             --override '{"version":"${{ steps.version.outputs.version }}"}'

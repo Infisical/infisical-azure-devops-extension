@@ -1,16 +1,16 @@
-import { LoginRequest, LoginResponse } from "./types";
+import { AuthMethod, LoginRequest, LoginResponse } from "./types";
 import { loginWithUniversalAuth } from "./universalAuth";
 import { loginWithOidc } from "./oidc";
 
 export async function login(request: LoginRequest): Promise<LoginResponse> {
     switch (request.method) {
-        case "universal-auth":
+        case AuthMethod.UniversalAuth:
             return loginWithUniversalAuth({
                 baseUrl: request.baseUrl,
                 clientId: request.clientId,
                 clientSecret: request.clientSecret,
             });
-        case "oidc":
+        case AuthMethod.Oidc:
             return loginWithOidc({
                 baseUrl: request.baseUrl,
                 identityId: request.identityId,
@@ -26,4 +26,4 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
 }
 
 export type { LoginRequest, LoginResponse } from "./types";
-export { InfisicalAuthError } from "./types";
+export { AuthMethod, InfisicalAuthError } from "./types";

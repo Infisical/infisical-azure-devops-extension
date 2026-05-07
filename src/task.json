@@ -1,5 +1,4 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "cc27ba95-95d9-4479-9b6c-2c69881598fa",
     "name": "InfisicalSecrets",
     "friendlyName": "Get Infisical Secrets",
@@ -14,7 +13,7 @@
     "version": {
         "Major": 1,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Get Infisical secrets ($(environment))",
     "execution": {
