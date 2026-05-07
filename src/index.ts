@@ -29,7 +29,7 @@ async function getAccessTokenUniversal(connectionId: string, baseUrl: string): P
 
 async function getAccessTokenOidc(baseUrl: string): Promise<string> {
     const azureSubscription = tl.getInputRequired("azureSubscription");
-    const identityId = tl.getInputRequired("identityId");
+    const identityId = tl.getEndpointAuthorizationParameterRequired(azureSubscription, "identityId");
 
     const oidcRequestUri = tl.getVariable("System.OidcRequestUri");
     if (!oidcRequestUri) {

@@ -43,13 +43,6 @@
             "helpMarkDown": "Azure Resource Manager service connection used to mint a federated OIDC token. Required only when the selected Infisical service connection uses the OIDC authentication scheme. The Azure service connection must be configured with Workload Identity Federation."
         },
         {
-            "name": "identityId",
-            "type": "string",
-            "label": "Infisical identity ID (OIDC only)",
-            "required": false,
-            "helpMarkDown": "Infisical machine identity ID to authenticate as. Required only when the Infisical service connection uses the OIDC scheme."
-        },
-        {
             "name": "projectId",
             "type": "string",
             "label": "Project ID",

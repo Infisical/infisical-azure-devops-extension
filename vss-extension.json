@@ -89,7 +89,20 @@
                     {
                         "type": "ms.vss-endpoint.endpoint-auth-scheme-none",
                         "displayName": "OIDC",
-                        "inputDescriptors": []
+                        "inputDescriptors": [
+                            {
+                                "id": "identityId",
+                                "name": "Identity ID",
+                                "description": "The ID of the Infisical machine identity that accepts your Azure DevOps issuer.",
+                                "inputMode": "textbox",
+                                "isConfidential": false,
+                                "validation": {
+                                    "isRequired": true,
+                                    "dataType": "string"
+                                },
+                                "required": true
+                            }
+                        ]
                     }
                 ],
                 "helpMarkDown": "Configure access to your Infisical instance for fetching secrets in pipelines. <a href=\"https://infisical.com/docs\" target=\"_blank\">Learn more</a>."
