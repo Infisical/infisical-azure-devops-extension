@@ -112,6 +112,7 @@ describe("InfisicalSecrets task input wiring", () => {
         setEndpoint(CONNECTION_ID, {
             url: BASE_URL,
             scheme: "None",
+            parameters: { identityId: "machine-id-1" },
         });
         process.env["SYSTEM_OIDCREQUESTURI"] =
             "https://dev.azure.com/org/_apis/distributedtask/hubs/build/plans/abc/jobs/xyz/oidctoken";
@@ -121,7 +122,6 @@ describe("InfisicalSecrets task input wiring", () => {
         setInput("environment", "dev");
         setInput("secretPath", "/app");
         setInput("azureSubscription", "azurerm-conn-1");
-        setInput("identityId", "machine-id-1");
 
         fetchAzureOidcTokenMock.mockResolvedValue("federated-jwt");
         loginMock.mockResolvedValue({
@@ -175,6 +175,30 @@ describe("InfisicalSecrets task input wiring", () => {
         expect(setVars).toEqual([
             { name: "OIDC_SECRET", value: "val", isSecret: true, isOutput: false },
         ]);
+    });
+
+    it("fails when the OIDC service connection has no identityId parameter", async () => {
+        setEndpoint(CONNECTION_ID, {
+            url: BASE_URL,
+            scheme: "None",
+        });
+        process.env["SYSTEM_OIDCREQUESTURI"] =
+            "https://dev.azure.com/org/_apis/distributedtask/hubs/build/plans/abc/jobs/xyz/oidctoken";
+        process.env["ENDPOINT_AUTH_PARAMETER_SYSTEMVSSCONNECTION_ACCESSTOKEN"] = "ado-bearer-xyz";
+        setInput("infisicalConnection", CONNECTION_ID);
+        setInput("projectId", "ws-1");
+        setInput("environment", "dev");
+        setInput("azureSubscription", "azurerm-conn-1");
+
+        const capture = captureStdout();
+        require("../index");
+        const completion = await capture.complete;
+        capture.stop();
+
+        expect(completion.result).toBe("Failed");
+        expect(fetchAzureOidcTokenMock).not.toHaveBeenCalled();
+        expect(loginMock).not.toHaveBeenCalled();
+        expect(listSecretsMock).not.toHaveBeenCalled();
     });
 
     it("exposes imported secrets and lets direct secrets override imports with the same key", async () => {

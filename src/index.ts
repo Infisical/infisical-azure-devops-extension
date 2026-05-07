@@ -9,7 +9,7 @@ const SCHEME_NONE = "None"; // assume that if nothing was sent, it's OIDC
 async function getAccessToken(connectionId: string, baseUrl: string): Promise<string> {
     const scheme = tl.getEndpointAuthorizationSchemeRequired(connectionId);
     if (scheme === SCHEME_BASIC) return getAccessTokenUniversal(connectionId, baseUrl);
-    if (scheme === SCHEME_NONE) return getAccessTokenOidc(baseUrl);
+    if (scheme === SCHEME_NONE) return getAccessTokenOidc(connectionId, baseUrl);
     throw new Error(
         `Unsupported authentication scheme on Infisical service connection: ${scheme}`,
     );
@@ -27,9 +27,9 @@ async function getAccessTokenUniversal(connectionId: string, baseUrl: string): P
     return result.accessToken;
 }
 
-async function getAccessTokenOidc(baseUrl: string): Promise<string> {
+async function getAccessTokenOidc(connectionId: string, baseUrl: string): Promise<string> {
     const azureSubscription = tl.getInputRequired("azureSubscription");
-    const identityId = tl.getEndpointAuthorizationParameterRequired(azureSubscription, "identityId");
+    const identityId = tl.getEndpointAuthorizationParameterRequired(connectionId, "identityId");
 
     const oidcRequestUri = tl.getVariable("System.OidcRequestUri");
     if (!oidcRequestUri) {
