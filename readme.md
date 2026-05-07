@@ -96,7 +96,7 @@ Set the **Infisical URL** field on the service connection to your self-hosted ba
 Layout:
 
 - `src/auth/` — login strategies for Universal Auth and OIDC, plus a small dispatcher.
-- `src/secrets/` — wrapper around Infisical's `GET /api/v4/secrets` endpoint.
+- `src/secrets/` — wrapper around Infisical's `GET /api/v3/secrets/raw` endpoint.
 - `src/index.ts` — the `InfisicalSecrets` pipeline task entry point. Bundled into a single JS file via `@vercel/ncc` for distribution.
 - `src/task.json` — the pipeline task manifest. Copied to `dist/tasks/run/` at build time.
 - `vss-extension.json` — the extension manifest. Declares the service-connection contribution and the task contribution.
