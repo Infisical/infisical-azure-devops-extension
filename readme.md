@@ -21,12 +21,11 @@ When you create the service connection, pick **Universal Auth** as the authentic
 
 [OIDC Auth](https://infisical.com/docs/documentation/platform/identities/oidc-auth) — no credentials at connection-creation time.
 
-When you create the Infisical service connection, pick **OIDC** and use the [Azure credentials](https://infisical.com/docs/documentation/platform/identities/oidc-auth/azure). At pipeline run-time the task mints a federated OIDC JWT from an Azure Resource Manager service connection (Workload Identity Federation) and exchanges it for an Infisical access token.
+When you create the Infisical service connection, pick **OIDC** and use the [Azure credentials](https://infisical.com/docs/documentation/platform/identities/oidc-auth/azure). The connection adds an **Identity ID** field where you enter the Infisical machine identity ID that accepts your Azure DevOps issuer. At pipeline run-time the task mints a federated OIDC JWT from an Azure Resource Manager service connection (Workload Identity Federation) and exchanges it for an Infisical access token.
 
-To use OIDC you must also provide two task inputs:
+To use OIDC you must also provide one task input:
 
 - `azureSubscription` — an Azure RM service connection configured with Workload Identity Federation.
-- `identityId` — the ID of the Infisical machine identity that accepts your Azure DevOps issuer.
 
 ## Setup
 
@@ -84,7 +83,6 @@ Each fetched secret becomes a masked pipeline variable named after its Infisical
 | --------------------- | --------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `infisicalConnection` | Yes             | —       | Name of the Infisical service connection.                                                                                                                         |
 | `azureSubscription`   | OIDC only       | —       | Azure RM service connection (Workload Identity Federation) used to mint a federated OIDC token. Required when the Infisical connection uses the OIDC scheme.      |
-| `identityId`          | OIDC only       | —       | Infisical machine identity ID to authenticate as. Required when the Infisical connection uses the OIDC scheme.                                                    |
 | `projectId`           | Yes             | —       | The Infisical project (workspace) ID. Find it under **Project settings → General** in the Infisical UI.                                                           |
 | `environment`         | Yes             | `dev`   | The environment slug (e.g. `dev`, `staging`, `prod`).                                                                                                             |
 | `secretPath`          | No              | `/`     | Folder path within the environment.                                                                                                                               |
