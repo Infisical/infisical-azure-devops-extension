@@ -8,7 +8,7 @@ variables:
   INFISICAL_PROJECT_ID: <your-project-id>
 
 steps:
-  - task: InfisicalSecrets@1
+  - task: InfisicalSecrets@0
     displayName: Fetch secrets from Infisical
     inputs:
       infisicalConnection: my-infisical-connection
@@ -24,10 +24,11 @@ steps:
       DATABASE_URL: $(DATABASE_URL)
       API_KEY: $(API_KEY)
 
-  - task: InfisicalSecrets@1
+  # identityId is configured on the my-infisical-oidc-connection service connection, not here.
+  - task: InfisicalSecrets@0
     displayName: Fetch secrets via OIDC
     inputs:
       infisicalConnection: my-infisical-oidc-connection
       azureSubscription: 'my-azure-wif-connection'
-      identityId: '11111111-2222-3333-4444-555555555555'
       projectId: $(INFISICAL_PROJECT_ID)
+      environment: dev
