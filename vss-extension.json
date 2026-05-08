@@ -1,11 +1,11 @@
 {
     "manifestVersion": 1,
-    "id": "infisical-secrets-action-azure-validation",
+    "id": "infisical-azure-devops-task",
     "publisher": "infisical", 
-    "version": "1.0.0",
-    "name": "Infisical Secrets validation",
+    "version": "0.0.0",
+    "name": "Infisical Secrets",
     "description": "Fetch secrets from Infisical and expose them as masked pipeline variables. Supports Infisical Cloud and self-hosted instances.",
-    "public": false,
+    "public": true,
     "galleryFlags": ["Preview"],
     "categories": ["Azure Pipelines"],
     "tags": [

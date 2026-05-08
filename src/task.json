@@ -1,5 +1,5 @@
 {
-    "id": "cc27ba95-95d9-4479-9b6c-2c69881598fa",
+    "id": "3099432b-f9b1-4bfb-9962-fb405cd184db",
     "name": "InfisicalSecrets",
     "friendlyName": "Get Infisical Secrets",
     "description": "Fetch secrets from Infisical and expose them as pipeline variables.",
@@ -11,9 +11,9 @@
     ],
     "author": "infisical",
     "version": {
-        "Major": 1,
+        "Major": 0,
         "Minor": 0,
-        "Patch": 1
+        "Patch": 0
     },
     "instanceNameFormat": "Get Infisical secrets ($(environment))",
     "execution": {
