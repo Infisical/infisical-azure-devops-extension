@@ -1,0 +1,37 @@
+# .github/workflows/publish-extension.yml
+name: Publish Azure DevOps Extension
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run package-extension 
+
+      - name: Install tfx-cli
+        run: npm install -g tfx-cli
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to Marketplace
+        run: |
+          tfx extension publish \
+            --manifest-globs vss-extension.json \
+            --token ${{ secrets.AZURE_DEVOPS_PAT }} \
+            --override '{"version":"${{ steps.version.outputs.version }}"}'
